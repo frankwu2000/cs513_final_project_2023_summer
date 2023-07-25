@@ -1,0 +1,64 @@
+SELECT COUNT(*) as total_count FROM winery;
+
+SELECT COUNT(*) as country_null_count FROM winery WHERE country is NULL or country='';
+
+SELECT COUNT(*) as description_null_count FROM winery WHERE description is NULL or description='';
+
+SELECT COUNT(*) as designation_null_count FROM winery WHERE designation is NULL or designation='';
+
+SELECT COUNT(*) as points_null_count FROM winery WHERE points is NULL;
+
+SELECT COUNT(*) as price_null_count FROM winery WHERE price is NULL;
+
+SELECT COUNT(*) as province_null_count FROM winery WHERE province is NULL or province='';
+
+SELECT COUNT(*) as region_1_null_count FROM winery WHERE region_1 is NULL or region_1='';
+
+SELECT COUNT(*) as region_2_null_count FROM winery WHERE region_2 is NULL or region_2='';
+
+SELECT COUNT(*) as taster_name_null_count FROM winery WHERE taster_name is NULL or taster_name='';
+
+SELECT COUNT(*) as taster_twitter_handle_null_count FROM winery WHERE taster_twitter_handle is NULL or taster_twitter_handle='';
+
+SELECT COUNT(*) as title_null_count FROM winery WHERE title is NULL or title='';
+
+SELECT COUNT(*) as variety_null_count FROM winery WHERE variety is NULL or variety='';
+
+SELECT COUNT(*) as winery_null_count FROM winery WHERE winery is NULL or winery='';
+;
+
+SELECT MIN(price) as price_min, MAX(price) as price_max, AVG(price) as price_avg FROM winery WHERE price is not NULL;
+
+SELECT MIN(points) as points_min, MAX(points) as points_max, AVG(points) as points_avg FROM winery WHERE points is not NULL;
+
+SELECT country, count(*) as wine_count FROM winery WHERE country is not null GROUP BY country ORDER BY wine_count DESC LIMIT 10;
+
+SELECT designation, count(*) as wine_count FROM winery WHERE designation is not null GROUP BY designation ORDER BY wine_count DESC LIMIT 10;
+
+SELECT province, count(*) as wine_count FROM winery WHERE province is not null GROUP BY province ORDER BY wine_count DESC LIMIT 10;
+
+SELECT region_1, count(*) as wine_count FROM winery WHERE region_1 is not null GROUP BY region_1 ORDER BY wine_count DESC LIMIT 10;
+
+SELECT region_2, count(*) as wine_count FROM winery WHERE region_2 is not null GROUP BY region_2 ORDER BY wine_count DESC LIMIT 10;
+
+SELECT variety, count(*) as wine_count FROM winery WHERE variety is not null GROUP BY variety ORDER BY wine_count DESC LIMIT 10;
+
+SELECT winery, count(*) as wine_count FROM winery WHERE winery is not null GROUP BY winery ORDER BY wine_count DESC LIMIT 10;
+
+select count(*) as key_constrait_violations from (select title,taster_name,taster_twitter_handle, count(*) as title_count from winery group by title, taster_name, taster_twitter_handle) where title_count>1;
+
+select count(*) from winery where taster_twitter_handle in (select taster_twitter_handle from (select taster_twitter_handle, count(*) as taster_name_count from (select distinct taster_name, taster_twitter_handle from winery where taster_name is not null and taster_twitter_handle is not null) group by taster_twitter_handle) where taster_name_count>1);
+
+select taster_twitter_handle as twitter_handle_function_dependency_violation from (select taster_twitter_handle, count(*) as taster_name_count from (select distinct taster_name, taster_twitter_handle from winery where taster_name is not null and taster_twitter_handle is not null) group by taster_twitter_handle) where taster_name_count>1;
+
+select count(*) from winery where winery in (select winery from (select winery, count(*) as geo_count from (select distinct winery, province, country from winery where winery is not null and province is not null and country is not null) group by winery) where geo_count>1);
+
+select winery as winery_function_dependency_violation_top_10 from (select winery, count(*) as geo_count from (select distinct winery, province, country from winery where winery is not null and province is not null and country is not null) group by winery) where geo_count>1 limit 10;
+
+select count(*) from (select province, count(*) as country_count from (select distinct country, province from winery) group by province) where country_count > 1;
+
+select count(*) from winery where title in (select title from (select title, count(*) as variety_desig_count from (select distinct title, variety, designation from winery) group by title) where variety_desig_count>1);
+
+select count(*) from winery where points <0 or points>100;
+
+select count(*) from winery where price <=0;
